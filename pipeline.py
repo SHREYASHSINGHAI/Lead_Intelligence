@@ -8,9 +8,9 @@ df = pd.read_csv("data/leads_clay_enriched.csv")
 if df.empty:
     raise ValueError("CSV is empty")
 
-# --------------------------
+
 # Normalize Column Names
-# --------------------------
+
 df = df.rename(columns={
     "Name": "name",
     "Email": "email",
@@ -21,15 +21,15 @@ df = df.rename(columns={
     "Company HQ": "company_hq"
 })
 
-# --------------------------
+
 # PubMed Enrichment
-# --------------------------
+
 print("Checking PubMed publications...")
 df = enrich_pubmed_df(df)
 
-# --------------------------
+
 # Funding Amount Normalization
-# --------------------------
+
 print("Normalizing funding amount...")
 
 def normalize_funding_amount(value):
@@ -51,15 +51,15 @@ def normalize_funding_amount(value):
 
 df["funding_amount_usd"] = df["funding_amount"].apply(normalize_funding_amount)
 
-# --------------------------
+
 # Scoring
-# --------------------------
+
 print("Scoring leads...")
 df["score"] = df.apply(calculate_score, axis=1)
 df = df.sort_values("score", ascending=False)
 
-# --------------------------
+
 # Save Output
-# --------------------------
+
 df.to_csv("data/leads_ranked.csv", index=False)
 print("✅ Pipeline complete. leads_ranked.csv saved.")
